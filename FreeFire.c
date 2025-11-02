@@ -1,6 +1,8 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define CAPACIDADE 10
 
 typedef struct
 {
@@ -9,38 +11,42 @@ typedef struct
     int quantidade;
 } Item;
 
-void inseriritem(Item *itens, int n)
+// Inserir novo item
+void inserirItemVetor(Item *itens, int *qtd)
 {
-    for (int i = 0; i < n; i++)
+    if (*qtd >= CAPACIDADE)
     {
-        printf("Digite o nome do item %d: ", i + 1);
-        scanf("%s", itens[i].nome);
-
-        printf("Digite o tipo do item %d: ", i + 1);
-        scanf("%s", itens[i].tipo);
-
-        printf("Digite a quantidade do item %d: ", i + 1);
-        scanf("%d", &itens[i].quantidade);
-
-        printf("\n");
+        printf("Mochila cheia!\n");
+        return;
     }
+
+    printf("Digite o nome do item: ");
+    scanf("%s", itens[*qtd].nome);
+
+    printf("Digite o tipo do item: ");
+    scanf("%s", itens[*qtd].tipo);
+
+    printf("Digite a quantidade do item: ");
+    scanf("%d", &itens[*qtd].quantidade);
+
+    (*qtd)++;
+    printf("Item adicionado com sucesso!\n");
 }
 
-void removerItem(Item *itens, int *qtd)
+// Remover item por nome
+void removerItemVetor(Item *itens, int *qtd)
 {
-    char nome[30];
-    int pos = -1; //posição
-
     if (*qtd == 0)
     {
         printf("A mochila está vazia.\n");
         return;
     }
 
-    printf("Digite o nome do item que deseja remover: ");
+    char nome[30];
+    printf("Digite o nome do item a remover: ");
     scanf("%s", nome);
 
-    // busca sequencial pelo nome
+    int pos = -1;
     for (int i = 0; i < *qtd; i++)
     {
         if (strcmp(itens[i].nome, nome) == 0)
@@ -52,123 +58,174 @@ void removerItem(Item *itens, int *qtd)
 
     if (pos == -1)
     {
-        printf("Item '%s' não encontrado.\n", nome);
+        printf("Item não encontrado.\n");
         return;
     }
 
-    // desloca os itens à esquerda
     for (int i = pos; i < *qtd - 1; i++)
     {
         itens[i] = itens[i + 1];
     }
 
-    (*qtd)--; 
-    printf("Item '%s' removido com sucesso.\n", nome);
+    (*qtd)--;
+    printf("Item removido com sucesso!\n");
 }
 
-void listarItens(Item *itens, int qtd)
+// Listar todos os itens
+void listarItensVetor(Item *itens, int qtd)
 {
     if (qtd == 0)
     {
-        printf("\nA mochila está vazia.\n");
+        printf("A mochila está vazia.\n");
         return;
     }
 
-        printf("\n--- Itens na mochila ---\n");
-        for (int i = 0; i < qtd; i++)
+    printf("\n--- Itens na mochila ---\n");
+    for (int i = 0; i < qtd; i++)
+    {
+        printf("Item %d:\n", i + 1);
+        printf("  Nome: %s\n", itens[i].nome);
+        printf("  Tipo: %s\n", itens[i].tipo);
+        printf("  Quantidade: %d\n", itens[i].quantidade);
+        printf("--------------------------\n");
+    }
+}
+
+// Buscar item por nome (busca sequencial)
+void buscarSequencialVetor(Item *itens, int qtd)
+{
+    if (qtd == 0)
+    {
+        printf("A mochila está vazia.\n");
+        return;
+    }
+
+    char nome[30];
+    printf("Digite o nome do item a buscar: ");
+    scanf("%s", nome);
+
+    for (int i = 0; i < qtd; i++)
+    {
+        if (strcmp(itens[i].nome, nome) == 0)
         {
-            printf("Item %d:\n", i + 1);
+            printf("\nItem encontrado:\n");
             printf("  Nome: %s\n", itens[i].nome);
             printf("  Tipo: %s\n", itens[i].tipo);
             printf("  Quantidade: %d\n", itens[i].quantidade);
-            printf("--------------------------\n");
-        }
-}
-
-void buscarItem(Item *itens, int qtd)
-{
-   
-        char nome[30];
-        int encontrado = -1;
-
-        if (qtd == 0)
-        {
-            printf("A mochila está vazia.\n");
             return;
         }
+    }
 
-        printf("Digite o nome do item que deseja buscar: ");
-        scanf("%s", nome);
-
-        for (int i = 0; i < qtd; i++)
-        {
-            if (strcmp(itens[i].nome, nome) == 0)
-            {
-                encontrado = i;
-                break;
-            }
-        }
-
-        if (encontrado == -1)
-        {
-            printf("Item '%s' não encontrado.\n", nome);
-        }
-        else
-        {
-            printf("\nItem encontrado:\n");
-            printf("  Nome: %s\n", itens[encontrado].nome);
-            printf("  Tipo: %s\n", itens[encontrado].tipo);
-            printf("  Quantidade: %d\n", itens[encontrado].quantidade);
-        }
+    printf("Item não encontrado.\n");
 }
 
+// Ordenar vetor (Bubble Sort)
+void ordenarVetor(Item *itens, int qtd)
+{
+    if (qtd < 2)
+    {
+        printf("Poucos itens para ordenar.\n");
+        return;
+    }
+
+    Item temp;
+    for (int i = 0; i < qtd - 1; i++)
+    {
+        for (int j = 0; j < qtd - i - 1; j++)
+        {
+            if (strcmp(itens[j].nome, itens[j + 1].nome) > 0)
+            {
+                temp = itens[j];
+                itens[j] = itens[j + 1];
+                itens[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("Itens ordenados com sucesso!\n");
+}
+
+// Busca binária
+void buscarBinariaVetor(Item *itens, int qtd)
+{
+    if (qtd == 0)
+    {
+        printf("A mochila está vazia.\n");
+        return;
+    }
+
+    char nome[30];
+    printf("Digite o nome do item para busca binária: ");
+    scanf("%s", nome);
+
+    int inicio = 0, fim = qtd - 1, meio;
+    while (inicio <= fim)
+    {
+        meio = (inicio + fim) / 2;
+        int cmp = strcmp(nome, itens[meio].nome);
+
+        if (cmp == 0)
+        {
+            printf("\nItem encontrado (busca binária):\n");
+            printf("  Nome: %s\n", itens[meio].nome);
+            printf("  Tipo: %s\n", itens[meio].tipo);
+            printf("  Quantidade: %d\n", itens[meio].quantidade);
+            return;
+        }
+        else if (cmp < 0)
+            fim = meio - 1;
+        else
+            inicio = meio + 1;
+    }
+
+    printf("Item não encontrado na busca binária.\n");
+}
+
+// === MAIN ===
 int main()
 {
-    Item *mochila;
-    int capacidade = 10;
-    int qtdItens = 0;
-    int opcao;
-
-    // alocando dinamicamente
-    mochila = (Item *)malloc(capacidade * sizeof(Item));
+    Item *mochila = (Item *)malloc(CAPACIDADE * sizeof(Item));
     if (mochila == NULL)
     {
-        printf("Erro de alocação!\n");
-        return 1; // sai do programa
+        printf("Erro de alocação.\n");
+        return 1;
     }
+
+    int qtd = 0;
+    int opcao;
 
     do
     {
-        printf("\n--- Menu ---\n");
+        printf("\n--- MENU MOCHILA (VETOR) ---\n");
         printf("1 - Inserir item\n");
         printf("2 - Remover item\n");
         printf("3 - Listar itens\n");
-        printf("4 - Buscar item\n");
+        printf("4 - Buscar item (sequencial)\n");
+        printf("5 - Ordenar itens por nome\n");
+        printf("6 - Buscar item (binária)\n");
         printf("0 - Sair\n");
-        printf("Escolha uma opcao: ");
+        printf("Escolha: ");
         scanf("%d", &opcao);
 
         switch (opcao)
         {
         case 1:
-            if (qtdItens < capacidade)
-            {
-                inseriritem(&mochila[qtdItens], 1); // cadastra 1 item de cada vez
-                qtdItens++;
-            }
-            else
-            {
-                printf("Mochila cheia!\n");
-            }
+            inserirItemVetor(mochila, &qtd);
             break;
         case 2:
-            removerItem(mochila, &qtdItens);
+            removerItemVetor(mochila, &qtd);
             break;
         case 3:
-            listarItens(mochila, qtdItens);
+            listarItensVetor(mochila, qtd);
             break;
         case 4:
-            buscarItem(mochila, qtdItens);
+            buscarSequencialVetor(mochila, qtd);
+            break;
+        case 5:
+            ordenarVetor(mochila, qtd);
+            break;
+        case 6:
+            buscarBinariaVetor(mochila, qtd);
             break;
         case 0:
             printf("Saindo...\n");
@@ -179,6 +236,6 @@ int main()
 
     } while (opcao != 0);
 
-    free(mochila); // libera memória
+    free(mochila);
     return 0;
 }
